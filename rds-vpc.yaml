@@ -1,0 +1,107 @@
+# Description: Added RDS database instance resource to the VPC CloudFormation template
+# Revision 2
+# Date: June 11, 2026
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a VPC with 3 subnets across 3 Availability Zones in US-West-2.
+ 
+Resources:
+  StudentVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.33.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: VPC-jusace3339
+        - Key: StudentID
+          Value: jusace3339
+        - Key: Course
+          Value: Cloud Infrastructure
+        - Key: Environment
+          Value: StudentLab
+
+  SubnetAZ1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref StudentVPC
+      CidrBlock: 10.33.1.0/24
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs ''
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Subnet-jusace3339-AZ1
+        - Key: StudentID
+          Value: jusace3339
+        - Key: Environment
+          Value: StudentLab
+
+  SubnetAZ2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref StudentVPC
+      CidrBlock: 10.33.2.0/24
+      AvailabilityZone: !Select 
+        - 1
+        - !GetAZs ''
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Subnet-jusace3339-AZ2
+        - Key: StudentID
+          Value: jusace3339
+        - Key: Environment
+          Value: StudentLab
+
+  SubnetAZ3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref StudentVPC
+      CidrBlock: 10.33.3.0/24
+      AvailabilityZone: !Select 
+        - 2
+        - !GetAZs ''
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Subnet-jusace3339-AZ3
+        - Key: StudentID
+          Value: jusace3339
+        - Key: Environment
+          Value: StudentLab
+
+  RdsInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      VPCSecurityGroups:
+      - <SECURITY-GROUP-ID>
+      AllocatedStorage: '5'
+      DBInstanceClass: db.t3.micro
+      DBInstanceIdentifier: playground-db
+      Engine: MySQL
+      MasterUsername: Admin
+      MasterUserPassword: CloudAcademy123!
+
+Outputs:
+  VPCId:
+    Description: The ID of the created VPC.
+    Value: !Ref StudentVPC
+
+  VPCName:
+    Description: The name tag assigned to the VPC.
+    Value: VPC-jusace3339
+
+  Subnet1Id:
+    Description: Subnet created in the first Availability Zone.
+    Value: !Ref SubnetAZ1
+
+  Subnet2Id:
+    Description: Subnet created in the second Availability Zone.
+    Value: !Ref SubnetAZ2
+
+  Subnet3Id:
+    Description: Subnet created in the third Availability Zone.
+    Value: !Ref SubnetAZ3
